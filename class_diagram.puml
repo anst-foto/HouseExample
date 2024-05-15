@@ -1,0 +1,167 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+enum MaterialType {
+    WOOD
+    IRON
+}
+
+enum FoundationType {
+    GIRDER_FOUNDATION
+    PILED_FOUNDATION
+}
+
+FoundationType <--* Foundation
+MaterialType <--* Foundation
+abstract class Foundation {
+    + type : FoundationType
+
+    + length : double
+    + width : double
+
+    + material : MaterialType
+
+    # Foundation(type : FoundationType, length : double, width : double, material : MaterialType)
+}
+
+Foundation <|-- GirderFoundation
+class GirderFoundation {
+    + GirderFoundation(length : double, width : double, material : MaterialType)
+}
+
+Foundation <|-- PiledFoundation
+class PiledFoundation {
+    + PiledFoundation(length : double, width : double, material : MaterialType)
+}
+
+enum RoofType {
+    TERRACE_ROOF
+    SIMPLE_ROOF
+}
+
+RoofType <--* Roof
+MaterialType <--* Roof
+abstract class Roof {
+    + type : RoofType
+
+    + length : double
+    + width : double
+    + height : double
+
+    + material : MaterialType
+
+    # Roof(type : RoofType, length : double, width : double, height : double, material : MaterialType)
+}
+
+Roof <|-- TerraceRoof
+class TerraceRoof {
+    + TerraceRoof(length : double, width : double, height : double, material : MaterialType)
+}
+
+Roof <|-- SimpleRoof
+class SimpleRoof {
+    + SimpleRoof(length : double, width : double, height : double, material : MaterialType)
+}
+
+enum RoomType {
+    BED_ROOM
+    BATH_ROOM
+}
+
+RoomType <--* Room
+class Room {
+    + type : RoomType
+}
+
+Room <--* Storey
+class Storey {
+    + rooms : Room[]
+}
+
+Foundation <--* House
+Roof <--* House
+Storey <--* House
+class House {
+    + foundation : Foundation
+    + storeys : Storey[]
+    + roof : Roof
+}
+
+
+Foundation <--* FoundationFactory
+abstract class FoundationFactory {
+    # foundation : Foundation
+
+    # FoundationFactory()
+
+    + {abstract} Create() : Foundation
+}
+
+FoundationFactory <|-- GirderFoundationFactory
+class GirderFoundationFactory {
+    + GirderFoundationFactory(length : double, width : double, material : MaterialType)
+
+    + Create() : Foundation
+}
+
+FoundationFactory <|-- PiledFoundationFactory
+class PiledFoundationFactory {
+    + PiledFoundationFactory(length : double, width : double, material : MaterialType)
+
+    + Create() : Foundation
+}
+
+Roof <--* RoofFactory
+abstract class RoofFactory {
+    # foundation : Roof
+
+    # RoofFactory()
+
+    + {abstract} Create() : Roof
+}
+
+RoofFactory <|-- TerraceRoofFactory
+class TerraceRoofFactory {
+    + TerraceRoofFactory(length : double, width : double, material : MaterialType)
+
+    + Create() : Roof
+}
+
+RoofFactory <|-- SimpleRoofFactory
+class SimpleRoofFactory {
+    + SimpleRoofFactory(length : double, width : double, material : MaterialType)
+
+    + Create() : Roof
+}
+
+Room <--* RoomFactory
+class RoomFactory {
+    - room : Room
+
+    + RoomFactory()
+
+    + Create() : Room
+}
+
+Storey <--* StoreyFactory
+class StoreyFactory {
+    - storey : Storey
+
+    + StoreyFactory()
+
+    + Create() : Storey
+}
+
+House <--* HouseBuilder
+HouseBuilder <-- HouseBuilder
+class HouseBuilder {
+    - house : House
+
+    + CreateFoundation(factory : FoundationFactory) : HouseBuilder
+    + CreateRoof(factory : RoofFactory) : HouseBuilder
+    + CreateStorey(factory : StoreyFactory) : HouseBuilder
+
+    + Build() : House
+}
+
+@enduml
